@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PED Smart Classroom</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="controls">
+        <input id="teacher-id" type="text" placeholder="ID" value="prof-01">
+        <input id="teacher-name" type="text" placeholder="Nome do professor" value="Maria Silva">
+        <input id="classroom-id" type="text" placeholder="Sala" value="sala-7">
+        <input id="time" type="datetime-local" title="Horário simulado (vazio = agora)">
+        <button id="btn-detect">Detectar</button>
+        <button id="btn-end-class" disabled title="Encerra a aula em andamento">Encerrar aula</button>
+        <span class="presets" data-group="teachers">
+            <button data-id="prof-01" data-name="Maria Silva" data-room="sala-7" data-time="2026-04-27T07:45">Seg 07:45 Maria</button>
+            <button data-id="prof-02" data-name="João Costa"  data-room="sala-3" data-time="2026-04-27T09:45">Seg 09:45 João</button>
+            <button data-id="prof-03" data-name="Ana Paula"   data-room="sala-3" data-time="2026-04-28T10:30">Ter 10:30 Ana</button>
+            <button data-id="prof-01" data-name="Maria Silva" data-room="sala-7" data-time="2026-05-02T10:00">Sáb 10h (sem aula)</button>
+        </span>
+        <span id="status" role="status" aria-live="polite"></span>
+    </header>
+
+    <header class="controls voice-controls">
+        <strong>🎤</strong>
+        <input id="voice-text" type="text" placeholder='Comando ex: "próximo slide", "abrir atividade 3"'>
+        <button id="btn-voice">Enviar</button>
+        <button id="btn-mic" title="Ditar (Web Speech API — Chrome/Edge)" aria-label="Ditar comando">🎙️</button>
+        <label class="toggle"><input type="checkbox" id="use-llm"> usar LLM</label>
+        <label class="toggle"><input type="checkbox" id="show-telemetry"> painel telemetria</label>
+        <span class="presets" data-group="voice">
+            <button data-voice="próximo slide">próximo slide</button>
+            <button data-voice="slide anterior">anterior</button>
+            <button data-voice="abrir atividade 3">atividade 3</button>
+            <button data-voice="ligar projetor">projetor</button>
+            <button data-voice="fazer chamada">chamada</button>
+            <button data-voice="passa aí">passa aí (testar memory)</button>
+            <button data-voice="blablabla">(unrecognized)</button>
+        </span>
+    </header>
+
+    <div id="voice-result-bar" class="voice-result-bar" role="status" aria-live="polite" hidden></div>
+
+    <div class="layout">
+        <main id="display" class="display idle">
+            <div class="idle-msg">Aguardando detecção de professor...</div>
+        </main>
+
+        <aside id="telemetry-panel" class="telemetry-panel" hidden>
+            <div class="telemetry-head">
+                <strong>Telemetria de voz</strong>
+                <button id="btn-refresh-telemetry" title="Recarregar">↻</button>
+            </div>
+            <div id="telemetry-summary" class="telemetry-summary"></div>
+            <div class="telemetry-list-head">Últimos comandos</div>
+            <ul id="telemetry-list" class="telemetry-list"></ul>
+        </aside>
+    </div>
+
+    <!-- Modal de correção -->
+    <dialog id="correct-modal" class="correct-modal">
+        <form method="dialog">
+            <h3>Corrigir interpretação</h3>
+            <p>Texto: <strong id="correct-input"></strong></p>
+            <p>Sistema entendeu: <code id="correct-wrong"></code></p>
+            <label>Intent correto:
+                <select id="correct-intent">
+                    <option value="start_class">start_class</option>
+                    <option value="next_slide">next_slide</option>
+                    <option value="previous_slide">previous_slide</option>
+                    <option value="open_activity">open_activity</option>
+                    <option value="play_video">play_video</option>
+                    <option value="pause_video">pause_video</option>
+                    <option value="mark_attendance">mark_attendance</option>
+                    <option value="turn_on_projector">turn_on_projector</option>
+                    <option value="turn_off_projector">turn_off_projector</option>
+                    <option value="query_current_class">query_current_class</option>
+                </select>
+            </label>
+            <div class="modal-actions">
+                <button type="button" id="btn-correct-cancel">Cancelar</button>
+                <button type="button" id="btn-correct-save">Salvar correção</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="app.js"></script>
+</body>
+</html>
